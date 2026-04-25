@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Tugas</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 400px; margin: auto; line-height: 1.6; }
+        .card { border: 1px solid #ddd; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        input, select, button { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        button { background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:disabled { background: #ccc; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2 id="displayJudul">Pengumpulan Testing Tugas</h2>
+    
+    <input type="text" id="nama" placeholder="Nama Lengkap Siswa" required>
+    <input type="text" id="kelas" placeholder="Kelas (Contoh: 12 TKJ)" required>
+    
+    <label>Pilih File Tugas:</label>
+    <input type="file" id="fileInput" required>
+    
+    <button id="btnUpload" onclick="uploadData()">KIRIM UPLOAD TUGAS</button>
+    <p id="status"></p>
+</div>
+
+<script>
+    // Konfigurasi Custom Anda
+    const judulKegiatan = "Test-Tugas"; // <--- CUSTOM JUDUL DISINI
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyQGCMz0hmXF8DCkJ9Gt7ihMjdS4FUfzSQtU8doFUbNKmhbgzt5zkpnGEUz0PDV3PLe/exec"; 
+
+    document.getElementById('displayJudul').innerText = judulKegiatan;
+
+    function uploadData() {
+        const btn = document.getElementById('btnUpload');
+        const nama = document.getElementById('nama').value;
+        const kelas = document.getElementById('kelas').value;
+        const fileInput = document.getElementById('fileInput').files[0];
+        const status = document.getElementById('status');
+
+        if (!nama || !kelas || !fileInput) {
+            return alert("Harap lengkapi semua data!");
+        }
+
+        btn.disabled = true;
+        status.innerText = "Sedang mengirim... Mohon tunggu.";
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Data = e.target.result.split(',')[1];
+            
+            // Mekanisme Rename: Nama_Kelas_JudulTugas
+            const newFileName = `${nama}_${kelas}_${judulKegiatan}.${fileInput.name.split('.').pop()}`;
+
+            const payload = {
+                fileData: base64Data,
+                filename: newFileName,
+                mimeType: fileInput.type
+            };
+
+            fetch(scriptURL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                status.innerText = "Selesai!";
+                btn.disabled = false;
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Terjadi kesalahan!");
+                btn.disabled = false;
+            });
+        };
+        reader.readAsDataURL(fileInput);
+    }
+</script>
+
+</body>
+</html>
