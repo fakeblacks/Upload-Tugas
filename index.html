@@ -4,22 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Upload Tugas</title>
-    <!-- Google Fonts untuk tampilan lebih profesional -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2563eb;
+            --primary: #2563eb;
             --primary-hover: #1d4ed8;
-            --bg-body: #f8fafc;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --success: #10b981;
         }
 
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-body);
-            color: var(--text-main);
+            background-color: var(--bg);
+            color: var(--text);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -28,121 +26,84 @@
             padding: 20px;
         }
 
+        /* Card Styling */
         .card { 
             background: #ffffff;
             padding: 40px; 
             border-radius: 16px; 
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
             width: 100%;
             max-width: 450px;
-            box-sizing: border-box;
         }
 
-        h2 { 
-            margin: 0 0 10px 0;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-main);
-            text-align: center;
-        }
+        h2 { text-align: center; margin: 0 0 10px; font-weight: 700; }
+        .subtitle { text-align: center; color: #64748b; font-size: 14px; margin-bottom: 30px; }
 
-        .subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 6px;
-            color: var(--text-main);
-        }
-
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
         input, select { 
-            width: 100%; 
-            padding: 12px 16px; 
-            margin: 0;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 15px;
-            font-family: inherit;
-            box-sizing: border-box;
-            transition: all 0.2s ease;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        input[type="file"] {
-            background: #f1f5f9;
-            border: 2px dashed var(--border-color);
-            padding: 20px;
-            cursor: pointer;
+            width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 15px; box-sizing: border-box;
         }
 
         button { 
-            width: 100%; 
-            padding: 14px; 
-            background-color: var(--primary-color); 
-            color: white; 
-            border: none; 
-            border-radius: 8px;
-            cursor: pointer; 
-            font-weight: 600;
-            font-size: 16px;
-            margin-top: 10px;
-            transition: background-color 0.2s ease;
+            width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; 
+            font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        button:hover { background: var(--primary-hover); }
+        button:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        /* --- MODAL STYLING --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex; align-items: center; justify-content: center;
+            visibility: hidden; opacity: 0; transition: 0.3s; z-index: 1000;
+        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+
+        .modal {
+            background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px;
+            text-align: center; transform: translateY(-20px); transition: 0.3s;
+        }
+        .modal-overlay.active .modal { transform: translateY(0); }
+
+        .icon-success {
+            width: 60px; height: 60px; background: #ecfdf5; color: var(--success);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 30px; margin: 0 auto 20px;
         }
 
-        button:hover { 
-            background-color: var(--primary-hover); 
-        }
+        .modal h3 { margin: 0 0 10px; color: var(--text); }
+        .modal p { color: #64748b; font-size: 14px; line-height: 1.5; margin-bottom: 25px; }
+        .file-name { font-weight: 600; color: var(--primary); word-break: break-all; }
 
-        button:disabled { 
-            background-color: #cbd5e1;
-            cursor: not-allowed;
+        .btn-close {
+            background: #f1f5f9; color: #475569; border: none; padding: 10px 25px;
+            border-radius: 8px; font-weight: 600; cursor: pointer;
         }
+        .btn-close:hover { background: #e2e8f0; }
 
-        #status { 
-            text-align: center;
-            font-size: 14px;
-            margin-top: 15px;
-            font-weight: 500;
-        }
-
-        .success { color: #059669; }
-        .error { color: #dc2626; }
-        .loading { color: var(--primary-color); }
+        #status-msg { text-align: center; font-size: 14px; margin-top: 15px; color: var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2 id="displayJudul">Portal Upload Tugas</h2>
-    <p class="subtitle">Pastikan data yang Anda isi sudah benar sebelum mengirim.</p>
+    <h2>Portal Upload Tugas</h2>
+    <p class="subtitle">Sistem Pengumpulan Tugas Otomatis</p>
     
     <div class="form-group">
-        <label for="namaTugas">Judul Tugas</label>
-        <input type="text" id="namaTugas" placeholder="Contoh: Tugas Jaringan Dasar" required>
+        <label>Nama/Judul Tugas</label>
+        <input type="text" id="namaTugas" placeholder="Contoh: Praktikum Jaringan" required>
     </div>
 
     <div class="form-group">
-        <label for="nama">Nama Lengkap Siswa</label>
-        <input type="text" id="nama" placeholder="Masukkan nama lengkap Anda" required>
+        <label>Nama Lengkap</label>
+        <input type="text" id="nama" placeholder="Masukkan nama sesuai absen" required>
     </div>
 
     <div class="form-group">
-        <label for="kelas">Kelas</label>
+        <label>Kelas</label>
         <select id="kelas" required>
             <option value="" disabled selected>Pilih Kelas</option>
             <option value="10 TKJ">10 TKJ</option>
@@ -152,16 +113,27 @@
     </div>
     
     <div class="form-group">
-        <label for="fileInput">Pilih File Tugas</label>
+        <label>Pilih File</label>
         <input type="file" id="fileInput" required>
     </div>
     
     <button id="btnUpload" onclick="uploadData()">KIRIM TUGAS SEKARANG</button>
-    <p id="status"></p>
+    <p id="status-msg"></p>
+</div>
+
+<!-- CUSTOM MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div class="icon-success">✓</div>
+        <h3>Pengiriman Berhasil!</h3>
+        <p>File Anda telah tersimpan sebagai:<br>
+           <span class="file-name" id="displayFileName"></span>
+        </p>
+        <button class="btn-close" onclick="closeModal()">Tutup</button>
+    </div>
 </div>
 
 <script>
-    // Konfigurasi URL Script Google Anda
     const scriptURL = "https://script.google.com/macros/s/AKfycbyQGCMz0hmXF8DCkJ9Gt7ihMjdS4FUfzSQtU8doFUbNKmhbgzt5zkpnGEUz0PDV3PLe/exec"; 
 
     function uploadData() {
@@ -170,52 +142,46 @@
         const nama = document.getElementById('nama').value;
         const kelas = document.getElementById('kelas').value;
         const fileInput = document.getElementById('fileInput').files[0];
-        const status = document.getElementById('status');
+        const status = document.getElementById('status-msg');
 
-        if (!namaTugas || !nama || !kelas || !fileInput) {
-            return alert("Harap lengkapi semua data dan pilih file!");
-        }
+        if (!namaTugas || !nama || !kelas || !fileInput) return alert("Lengkapi semua data!");
 
         btn.disabled = true;
-        status.className = "loading";
-        status.innerText = "⏳ Sedang mengirim berkas... Mohon tunggu.";
+        status.innerText = "⏳ Sedang mengunggah berkas...";
 
         const reader = new FileReader();
         reader.onload = function(e) {
-            const base64Data = e.target.result.split(',')[1];
-            
-            // Mekanisme Rename sesuai permintaan: Nama_Kelas_Tugas
             const ext = fileInput.name.split('.').pop();
             const newFileName = `${nama}_${kelas}_${namaTugas}.${ext}`;
 
-            const payload = {
-                fileData: base64Data,
-                filename: newFileName,
-                mimeType: fileInput.type
-            };
-
             fetch(scriptURL, {
                 method: "POST",
-                body: JSON.stringify(payload)
+                body: JSON.stringify({
+                    fileData: e.target.result.split(',')[1],
+                    filename: newFileName,
+                    mimeType: fileInput.type
+                })
             })
             .then(res => res.json())
             .then(data => {
-                alert("Berhasil! " + data.message);
-                status.className = "success";
-                status.innerText = "✅ File berhasil diunggah!";
+                document.getElementById('displayFileName').innerText = newFileName;
+                document.getElementById('modalOverlay').classList.add('active');
+                status.innerText = "";
                 btn.disabled = false;
-                // Reset form setelah sukses
+                // Reset file input
                 document.getElementById('fileInput').value = "";
             })
             .catch(err => {
-                console.error(err);
-                status.className = "error";
-                status.innerText = "❌ Terjadi kesalahan! Silakan coba lagi.";
-                alert("Terjadi kesalahan saat mengunggah.");
+                alert("Gagal mengunggah file.");
                 btn.disabled = false;
+                status.innerText = "";
             });
         };
         reader.readAsDataURL(fileInput);
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('active');
     }
 </script>
 
